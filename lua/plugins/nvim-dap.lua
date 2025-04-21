@@ -20,6 +20,11 @@ return {
         command = "~/Library/Caches/pypoetry/virtualenvs/badger-go-5Azyc4AC-py3.12/bin/python",
         args = { "-m", "debugpy.adapter" },
       }
+      dap.adapters.go = {
+        type = "executable",
+        command = "dlv", -- Path to your delve binary, should be in the $PATH
+        args = { "dap", "exec", "${workspaceFolder}/ui/ui.go" },
+      }
 
       dap.configurations.python = {
         {
@@ -100,13 +105,16 @@ return {
       -- Step Over
       vim.keymap.set("n", "<leader>do", function()
         dap.step_over()
-      end, { noremap = true, silent = true, desc = "Step Over" })
+      end, { noremap = true, silent = true, desc = "Step Over (Control + Shift + o)" })
+      vim.keymap.set("n", "<C-S-o>", function()
+        require("dap").step_over()
+      end, { noremap = true, silent = true, desc = "Step over" })
 
       -- Step Into
       vim.keymap.set("n", "<leader>di", function()
         dap.step_into()
-      end, { noremap = true, silent = true, desc = "Step into" })
-      vim.keymap.set("n", "<C-c>", function()
+      end, { noremap = true, silent = true, desc = "Step into (Control + Shift + i)" })
+      vim.keymap.set("n", "<C-S-i>", function()
         require("dap").step_into()
       end, { noremap = true, silent = true, desc = "Step Into" })
 
