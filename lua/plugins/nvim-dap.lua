@@ -39,10 +39,12 @@ return {
         {
           type = "python",
           request = "launch",
-          name = "Batch Geocoding Job",
-          module = "geocoding.infrastructure.command_schedule_jobs_to_provider",
-          pythonPath = python_path,
+          name = "Schedule Jobs to Provider",
+          program = "${workspaceFolder}/manage.py",
+          args = { "schedule_jobs_to_provider" },
+          django = true,
           console = "integratedTerminal",
+          pythonPath = python_path,
         },
       }
 
@@ -128,6 +130,9 @@ return {
       vim.keymap.set("n", "<leader>du", function()
         dapui.toggle()
       end, { noremap = true, silent = true, desc = "Toggle UI" })
+      vim.keymap.set("n", "<C-S-u>", function()
+        dapui.toggle()
+      end, { noremap = true, silent = true, desc = "Step Into" })
 
       vim.keymap.set("n", "<leader>de", function()
         vim.ui.input({ prompt = "Evaluate expression: " }, function(expr)
@@ -135,7 +140,31 @@ return {
             return
           end
           local widgets = require("dap.ui.widgets")
-          widgets.hover(expr)
+          local win = widgets.hover(expr)
+          vim.api.nvim_create_autocmd("WinEnter", {
+            once = true,
+            callback = function()
+              local float_win = vim.api.nvim_get_current_win()
+              vim.api.nvim_buf_set_keymap(0, "n", "<CR>", "<Cmd>close<CR>", { noremap = true, silent = true })
+            end,
+          })
+        end)
+      end, { noremap = true, silent = true, desc = "DAP Evaluate expression (manual)" })
+
+      vim.keymap.set("n", "<C-S-e>", function()
+        vim.ui.input({ prompt = "Evaluate expression: " }, function(expr)
+          if not expr or expr == "" then
+            return
+          end
+          local widgets = require("dap.ui.widgets")
+          local win = widgets.hover(expr)
+          vim.api.nvim_create_autocmd("WinEnter", {
+            once = true,
+            callback = function()
+              local float_win = vim.api.nvim_get_current_win()
+              vim.api.nvim_buf_set_keymap(0, "n", "<CR>", "<Cmd>close<CR>", { noremap = true, silent = true })
+            end,
+          })
         end)
       end, { noremap = true, silent = true, desc = "DAP Evaluate expression (manual)" })
 
