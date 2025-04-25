@@ -26,3 +26,4 @@ end, { noremap = true, silent = false })
 vim.keymap.set("n", "t", ":FindTest<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<C-e>", "<C-^>", { noremap = true, silent = true, desc = "Go to last file" })
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
