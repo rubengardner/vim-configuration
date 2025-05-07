@@ -17,12 +17,13 @@ return {
 
       dap.adapters.python = {
         type = "executable",
-        command = "~/Library/Caches/pypoetry/virtualenvs/badger-go-5Azyc4AC-py3.12/bin/python",
+        -- command = "~/Library/Caches/pypoetry/virtualenvs/badger-go-5Azyc4AC-py3.12/bin/python",
+        command = python_path,
         args = { "-m", "debugpy.adapter" },
       }
       dap.adapters.go = {
         type = "executable",
-        command = "dlv", -- Path to your delve binary, should be in the $PATH
+        command = "dlv",
         args = { "dap", "exec", "${workspaceFolder}/ui/ui.go" },
       }
 
@@ -57,7 +58,7 @@ return {
         },
       }
       require("dap-go").setup()
-      require("dapui").setup({})
+      require("dapui").setup()
       require("nvim-dap-virtual-text").setup()
 
       dap_python.setup("python3")
@@ -134,9 +135,27 @@ return {
         dapui.toggle()
       end, { noremap = true, silent = true, desc = "Step Into" })
 
+      -- DEBUG TEST UNDER CURSOR
       vim.keymap.set("n", "<leader>dt", function()
         local full_path = vim.fn.expand("%:p")
         local rel_path = vim.fn.fnamemodify(full_path, ":~:.")
+        local ext = vim.fn.expand("%:e")
+
+        -- Handle Go files
+        if ext == "go" then
+          local test_func = vim.fn.expand("<cword>")
+          local current_pkg = vim.fn.fnamemodify(full_path, ":h")
+          dap.run({
+            type = "go",
+            name = "Debug Go Test",
+            request = "launch",
+            mode = "test",
+            program = current_pkg,
+            args = { "-test.run", test_func },
+          })
+          return
+        end
+
         local module_path = rel_path:gsub("/", "."):gsub("%.py$", "")
         local function_name = vim.fn.expand("<cword>")
 
@@ -191,7 +210,7 @@ return {
             args = { test_target },
           })
         end
-      end, { noremap = true, silent = true, desc = "Debug test under cursor (Django or unittest)" })
+      end, { noremap = true, silent = true, desc = "Debug test under cursor" })
     end,
   },
 }
