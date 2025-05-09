@@ -16,7 +16,8 @@ vim.keymap.set("n", "<C-Left>", "^", { noremap = true, silent = true }) -- Go to
 vim.keymap.set("n", "<C-l>", "$", { noremap = true, silent = true }) -- Move to end of line
 vim.keymap.set("n", "<C-h>", "^", { noremap = true, silent = true }) -- Move to first non-blank characte
 
-vim.keymap.set("n", "<leader>r", function()
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP Rename" })
+vim.keymap.set("n", "<leader>rr", function()
   local old = vim.fn.input("Find: ")
   local new = vim.fn.input("Replace with: ")
   if old ~= "" then
