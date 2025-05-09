@@ -11,6 +11,7 @@ return {
       filtered_items = {
         hide_dotfiles = false, -- This ensures dotfiles are visible
         hide_gitignored = false,
+        hide_by_name = { "__pycache__" },
       },
     },
   },

@@ -17,7 +17,6 @@ return {
 
       dap.adapters.python = {
         type = "executable",
-        -- command = "~/Library/Caches/pypoetry/virtualenvs/badger-go-5Azyc4AC-py3.12/bin/python",
         command = python_path,
         args = { "-m", "debugpy.adapter" },
       }
