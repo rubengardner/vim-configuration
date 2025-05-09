@@ -1,23 +1,24 @@
 return {
   "neovim/nvim-lspconfig",
-  opts = {
-    servers = {
-      ruff_lsp = false, -- Disables Ruff
-    },
-  },
-  require("lspconfig").pyright.setup({
-    settings = {
-      python = {
-        pythonPath = "/Users/ruben_gardner/Library/Caches/pypoetry/virtualenvs/badger-go-5Azyc4AC-py3.12/bin/python",
-        analysis = {
-          extraPaths = {
-            "/Users/ruben_gardner/Library/Caches/pypoetry/virtualenvs/badger-go-5Azyc4AC-py3.12/lib/python3.12/site-packages",
-            "/Users/ruben_gardner/PycharmProjects/badger-app/badger-go/monolith",
-          },
-          autoImportCompletions = true,
+  config = function()
+    vim.diagnostic.config({
+      virtual_text = true,
+      signs = true,
+      underline = true,
+      update_in_insert = false,
+      severity_sort = true,
+    })
+
+    local python_path = vim.fn.trim(vim.fn.system("poetry run which python"))
+
+    require("lspconfig").pyright.setup({
+      settings = {
+        python = {
+          pythonPath = python_path,
         },
       },
-    },
-  }),
-  require("lspconfig").tsserver.setup({}),
+    })
+
+    require("lspconfig").tsserver.setup({})
+  end,
 }
