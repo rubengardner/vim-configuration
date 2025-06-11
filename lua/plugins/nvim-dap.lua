@@ -46,6 +46,21 @@ return {
           console = "integratedTerminal",
           pythonPath = python_path,
         },
+        {
+          type = "python",
+          request = "launch",
+          name = "Geocoding Service",
+          args = {
+            "src.geocoding.vendors.api.fast_api.main:app",
+            "--reload",
+            "--port",
+            "9001",
+          },
+          console = "integratedTerminal",
+          cwd = "${workspaceFolder}",
+          module = "uvicorn",
+          pythonPath = python_path,
+        },
       }
 
       dap.configurations.go = {
@@ -133,6 +148,13 @@ return {
       vim.keymap.set("n", "<C-S-u>", function()
         dapui.toggle()
       end, { noremap = true, silent = true, desc = "Step Into" })
+
+      vim.keymap.set("n", "<leader>de", function()
+        require("dap.ui.widgets").hover()
+      end, { noremap = true, silent = true, desc = "Evaluate expression (hover)" })
+      vim.keymap.set("n", "<C-S-e>", function()
+        require("dap.ui.widgets").hover()
+      end, { noremap = true, silent = true, desc = "Evaluate expression (hover)" })
 
       -- DEBUG TEST UNDER CURSOR
       vim.keymap.set("n", "<leader>dt", function()
