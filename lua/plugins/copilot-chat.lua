@@ -125,7 +125,7 @@ return {
             },
           })
         end,
-        desc = "Prompts with All buffers",
+        desc = "Prompts + all buffers",
       },
       {
         "<leader>ap",
@@ -166,17 +166,17 @@ return {
       },
 
       {
-        "<leader>ai",
+        "<leader>an",
         function()
           local input = vim.fn.input("Ask Copilot (No context): ")
           if input ~= "" then
             vim.cmd("CopilotChat " .. input)
           end
         end,
-        desc = "Inline NO context",
+        desc = "NO context",
       },
       {
-        "<leader>aq",
+        "<leader>ac",
         function()
           local input = vim.fn.input("Ask copilot (Context): ")
           if input ~= "" then
@@ -185,7 +185,33 @@ return {
             })
           end
         end,
-        desc = "Inline  Context",
+        desc = "Context - Current Buffer",
+      },
+      {
+        "<leader>ad",
+        function()
+          local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line(".") - 1 })
+          if #diagnostics == 0 then
+            vim.notify("No diagnostics found for current line.", vim.log.levels.INFO)
+            return
+          end
+
+          local diagnostic_messages = {}
+          for _, d in ipairs(diagnostics) do
+            table.insert(diagnostic_messages, d.message)
+          end
+
+          local diagnostic_text = table.concat(diagnostic_messages, "\n")
+          local prompt = "Fix the following error in my code:\n" .. diagnostic_text
+
+          local line_content = vim.api.nvim_get_current_line()
+          prompt = prompt .. "\n\nLine content: " .. line_content
+
+          require("CopilotChat").ask(prompt, {
+            selection = require("CopilotChat.select").buffer,
+          })
+        end,
+        desc = "Diagnostics",
       },
       -- Clear buffer and chat history
       { "<leader>ar", "<cmd>CopilotChatReset<cr>", desc = "Clear buffer and chat history" },
