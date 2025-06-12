@@ -34,3 +34,6 @@ vim.keymap.set(
   ":e ~/PycharmProjects/badger-app/badger-go/monolith/badgermapping/settings_local.py<CR>",
   { noremap = true, silent = true, desc = "GO Settings Local" }
 )
+
+vim.api.nvim_set_keymap("n", "<C-h>", ":vertical resize -2<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<C-l>", ":vertical resize +2<CR>", { noremap = true, silent = true })
