@@ -26,11 +26,40 @@ return {
         args = { "dap", "exec", "${workspaceFolder}/ui/ui.go" },
       }
 
+      dap.adapters["pwa-node"] = {
+        type = "server",
+        host = "localhost",
+        port = 8123,
+        executable = {
+          command = vim.fn.stdpath("data") .. "/mason/packages/js-debug-adapter/js-debug-adapter",
+          args = { "8123" },
+        },
+      }
+
+      dap.configurations.typescript = {
+        {
+          name = "Tile Server",
+          type = "pwa-node",
+          request = "launch",
+          program = "${workspaceFolder}/tile_server/server.ts",
+          cwd = "${workspaceFolder}",
+          runtimeExecutable = "node",
+          runtimeArgs = { "-r", "ts-node/register" },
+          sourceMaps = true,
+          protocol = "inspector",
+          console = "integratedTerminal",
+          env = {
+            PORT = "3000",
+          },
+          outFiles = { "${workspaceFolder}/tile_server/dist/**/*.js" },
+        },
+      }
+
       dap.configurations.python = {
         {
           type = "python",
           request = "launch",
-          name = "Monolith",
+          name = "V3 - Django",
           program = vim.fn.getcwd() .. "/manage.py",
           args = { "runserver", "0.0.0.0:8000" },
           django = true,
@@ -39,17 +68,52 @@ return {
         {
           type = "python",
           request = "launch",
-          name = "Schedule Jobs to Provider",
-          program = "${workspaceFolder}/manage.py",
-          args = { "schedule_jobs_to_provider" },
-          django = true,
+          name = "V3 - Celery Worker",
+          module = "celery",
+          args = {
+            "-A",
+            "badgermapping",
+            "worker",
+            "-Q",
+            "celery,recorddatafetcher,default,export,import-heavy-io,geocoding-heavy-io,routes,general-light-io",
+            "-l",
+            "INFO",
+            "-O",
+            "fair",
+            "--max-tasks-per-child=400",
+            "--pool=solo",
+          },
           console = "integratedTerminal",
-          pythonPath = python_path,
         },
         {
           type = "python",
           request = "launch",
-          name = "Geocoding Service",
+          name = "SO - Django",
+          program = "${workspaceFolder}/manage.py",
+          django = true,
+          args = { "runserver", "0.0.0.0:7000" },
+          env = {
+            PYTHONUNBUFFERED = "1",
+            DJANGO_SETTINGS_MODULE = "badgermapping.settings_local",
+          },
+          pytonPath = function()
+            return "docker"
+          end,
+          pythonArgs = {
+            "exec",
+            "-it",
+            "-e",
+            "PYTHONUNBUFFERED=1",
+            "-e",
+            "DJANGO_SETTINGS_MODULE=badgermapping.settings_local",
+            "badger-web",
+            "python",
+          },
+        },
+        {
+          type = "python",
+          request = "launch",
+          name = "GEO -- Fast API Service",
           args = {
             "src.geocoding.vendors.api.fast_api.main:app",
             "--reload",
@@ -59,6 +123,28 @@ return {
           console = "integratedTerminal",
           cwd = "${workspaceFolder}",
           module = "uvicorn",
+          pythonPath = python_path,
+          justMyCode = false,
+        },
+        {
+          type = "python",
+          request = "launch",
+          name = "GEO - Celery ",
+          console = "integratedTerminal",
+          module = "celery",
+          args = {
+            "-A",
+            "src.geocoding.vendors.celery.celery",
+            "worker",
+            "-Q",
+            "heavy-io,light-io",
+            "-l",
+            "INFO",
+            "-O",
+            "fair",
+            "--max-tasks-per-child=400",
+            "--pool=solo", -- so it runs in main thread (for debugging)
+          },
           pythonPath = python_path,
         },
       }
