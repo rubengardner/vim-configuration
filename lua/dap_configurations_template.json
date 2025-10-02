@@ -1,0 +1,106 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Tile Server",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceFolder}/tile_server/server.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "sourceMaps": true,
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "env": {
+        "PORT": "3000"
+      },
+      "outFiles": ["${workspaceFolder}/tile_server/dist/**/*.js"]
+    },
+    {
+      "type": "go",
+      "name": "Debug ui/ui.go",
+      "request": "launch",
+      "program": "${workspaceFolder}/ui/ui.go"
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "V3 - Django",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver", "0.0.0.0:8000"],
+      "django": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "V3 - Celery Worker",
+      "module": "celery",
+      "args": [
+        "-A",
+        "badgermapping",
+        "worker",
+        "-Q",
+        "celery,recorddatafetcher,default,export,import-heavy-io,geocoding-heavy-io,routes,general-light-io",
+        "-l",
+        "INFO",
+        "-O",
+        "fair",
+        "--max-tasks-per-child=400",
+        "--pool=solo"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "SO - Django (Docker - special handling needed)",
+      "program": "${workspaceFolder}/manage.py",
+      "django": true,
+      "args": ["runserver", "0.0.0.0:7000"],
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "DJANGO_SETTINGS_MODULE": "badgermapping.settings_local"
+      },
+      "comment": "The original config used a function for pythonPath to support Docker, which is not standard in launch.json. You may need a custom adapter or wrapper script for this to work."
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "GEO -- Fast API Service",
+      "module": "uvicorn",
+      "args": [
+        "src.geocoding.vendors.api.fast_api.main:app",
+        "--reload",
+        "--port",
+        "9001"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "python": "/path/to/your/python"
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "GEO - Celery",
+      "module": "celery",
+      "console": "integratedTerminal",
+      "args": [
+        "-A",
+        "src.geocoding.vendors.celery.celery",
+        "worker",
+        "-Q",
+        "heavy-io,light-io",
+        "-l",
+        "INFO",
+        "-O",
+        "fair",
+        "--max-tasks-per-child=400",
+        "--pool=solo"
+      ],
+      "python": "/path/to/your/python"
+    }
+  ]
+}
