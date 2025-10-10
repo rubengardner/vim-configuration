@@ -38,3 +38,10 @@ vim.keymap.set(
 
 vim.api.nvim_set_keymap("n", "<C-h>", ":vertical resize -2<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<C-l>", ":vertical resize +2<CR>", { noremap = true, silent = true })
+-- Terminal mode: Ctrl+q switches to terminal normal mode
+vim.api.nvim_set_keymap(
+  "t", -- terminal mode
+  "<C-q>", -- key you press
+  "<C-\\><C-n>", -- Neovim command to leave terminal mode
+  { noremap = true, silent = true, desc = "Terminal → Normal mode" }
+)
