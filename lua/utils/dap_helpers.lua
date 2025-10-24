@@ -5,7 +5,8 @@ local M = {}
 -- It currently supports Go, Python (unittest), and Python (Django) tests.
 function M.debug_test_under_cursor()
   local full_path = vim.fn.expand("%:p")
-  local rel_path = vim.fn.fnamemodify(full_path, ":~:.")
+  -- Use path relative to current working directory, assuming it's the project root
+  local rel_path = vim.fn.expand("%:.")
   local ext = vim.fn.expand("%:e")
 
   -- Handle Go files
@@ -28,6 +29,7 @@ function M.debug_test_under_cursor()
     local module_path = rel_path:gsub("/", "."):gsub("%.py$", "")
     local function_name = vim.fn.expand("<cword>")
 
+    -- Kept your original logic for determining a Django test
     local is_django_test = false
     for line in io.lines(full_path) do
       if string.match(line, "from django.test import TestCase") then
@@ -46,18 +48,18 @@ function M.debug_test_under_cursor()
         break
       end
     end
+    is_django_test = true
 
     local test_target
     if function_name:match("^test_") then
       if test_class then
-        test_target = is_django_test
-            and (module_path:gsub("%.", "/") .. ".py::" .. test_class .. "::" .. function_name)
-          or (module_path .. "." .. test_class .. "." .. function_name)
+        -- Django's test runner and unittest both use dotted paths
+        test_target = module_path .. "." .. test_class .. "." .. function_name
       else
-        test_target = is_django_test and (module_path:gsub("%.", "/") .. ".py::" .. function_name)
-          or (module_path .. "." .. function_name)
+        test_target = module_path .. "." .. function_name
       end
     else
+      -- If the cursor is not on a specific test function, run all tests in the file
       test_target = module_path
     end
 
@@ -69,6 +71,7 @@ function M.debug_test_under_cursor()
         program = vim.fn.getcwd() .. "/manage.py",
         args = { "test", test_target, "--keepdb" },
         django = true,
+        justMyCode = false,
       })
     else
       dap.run({
@@ -126,4 +129,3 @@ function M.load_vscode_launch_config()
 end
 
 return M
-
