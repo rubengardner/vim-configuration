@@ -26,7 +26,9 @@ return {
       },
     })
 
-    require("lspconfig").tsserver.setup({})
+    require("lspconfig").tsserver.setup({
+      on_attach = on_attach_disable_format,
+    })
 
     require("lspconfig").gopls.setup({
       settings = {
@@ -36,6 +38,16 @@ return {
           },
           staticcheck = true,
           gofumpt = true,
+        },
+      },
+    })
+
+    require("lspconfig").elixirls.setup({
+      cmd = { "elixir-ls" },
+      settings = {
+        elixirLS = {
+          dialyzerEnabled = true,
+          fetchDeps = true,
         },
       },
     })
