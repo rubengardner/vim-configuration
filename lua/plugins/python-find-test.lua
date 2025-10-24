@@ -10,11 +10,17 @@ return {
         return
       end
 
-      local file_name = vim.fn.fnamemodify(file_path, ":t") -- extract filename
-      local test_file = "test_" .. file_name
+      local file_name = vim.fn.fnamemodify(file_path, ":t")
+      local target_file
+
+      if file_name:match("^test_") then
+        target_file = file_name:gsub("^test_", "")
+      else
+        target_file = "test_" .. file_name
+      end
 
       telescope.find_files({
-        default_text = test_file, -- prefill with test filename
+        default_text = target_file,
       })
     end, {})
   end,
