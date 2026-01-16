@@ -2,6 +2,7 @@ return {
   "nvim-neo-tree/neo-tree.nvim",
   opts = {
     window = {
+      position = "right",
       mappings = {
         ["<Right>"] = "open", -- Right arrow expands
         ["<Left>"] = "close_node", -- Left arrow collapses
