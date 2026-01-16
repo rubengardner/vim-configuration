@@ -1,0 +1,13 @@
+[default.extend-words]
+# Add common variable naming patterns that aren't typos
+# nvim = "nvim"  # Example: if typos flags 'nvim' as a typo
+
+[type.python]
+extend-glob = ["*.py", "*.pyi"]
+
+[type.javascript]  
+extend-glob = ["*.js", "*.jsx", "*.ts", "*.tsx"]
+
+[default]
+check-filename = false
+check-file = true
