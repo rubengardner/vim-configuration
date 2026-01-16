@@ -54,6 +54,44 @@ return {
       end
     end
 
+    -- Override markdownlint-cli2 to use our config
+    opts.linters["markdownlint-cli2"] = {
+      cmd = "markdownlint-cli2",
+      stdin = false,
+      append_fname = true,
+      args = { "--config", vim.fn.stdpath("config") .. "/.markdownlint-cli2.jsonc" },
+      stream = "stdout",
+      ignore_exitcode = true,
+      parser = function(output, bufnr)
+        local diagnostics = {}
+        local lines = vim.split(output, "\n")
+        
+        for _, line in ipairs(lines) do
+          if line:match("^.+:%d+") then
+            local file, row, col, rule, msg = line:match("^(.-):(%-?%d+):?(%d*):? (.-%/.+) (.+)")
+            if not rule then
+              file, row, rule, msg = line:match("^(.-):(%-?%d+) (.-%/.+) (.+)")
+              col = 1
+            end
+            
+            if row and rule and msg then
+              table.insert(diagnostics, {
+                lnum = math.max(0, tonumber(row) - 1),
+                col = col and math.max(0, tonumber(col) - 1) or 0,
+                end_col = col and math.max(0, tonumber(col) - 1) or 0,
+                severity = vim.diagnostic.severity.WARN,
+                message = msg,
+                code = rule,
+                source = "markdownlint-cli2",
+              })
+            end
+          end
+        end
+        
+        return diagnostics
+      end,
+    }
+
     return opts
   end,
 }

@@ -8,5 +8,18 @@ return {
       typescriptreact = { "prettierd" },
       markdown = { "prettierd" },
     },
+    formatters = {
+      prettierd = {
+        prepend_args = function(self, ctx)
+          if ctx.filetype == "markdown" then
+            return {
+              "--prose-wrap", "always",
+              "--print-width", "80",
+            }
+          end
+          return {}
+        end,
+      },
+    },
   },
 }
