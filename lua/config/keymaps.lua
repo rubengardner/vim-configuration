@@ -25,7 +25,7 @@ vim.keymap.set("n", "<leader>rr", function()
   end
 end, { noremap = true, silent = false })
 vim.keymap.set("n", "t", ":FindTest<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>cg", ":GitCopyPath<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>cg", ":GitCopyPath<CR>", { noremap = true, silent = true, desc = "Copy git path" })
 
 vim.api.nvim_set_keymap("n", "<C-e>", "<C-^>", { noremap = true, silent = true, desc = "Go to last file" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
@@ -45,3 +45,6 @@ vim.api.nvim_set_keymap(
   "<C-\\><C-n>", -- Neovim command to leave terminal mode
   { noremap = true, silent = true, desc = "Terminal → Normal mode" }
 )
+
+local daily_note = require("utils.daily_note")
+vim.keymap.set("n", "<leader>o", daily_note.open_daily_note, { desc = "Open today's daily note" })
