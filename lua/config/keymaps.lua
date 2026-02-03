@@ -1,9 +1,6 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
-vim.api.nvim_set_keymap("n", "<leader>tt", ":TestNearest<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<leader>tf", ":TestFile<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<leader>tl", ":TestLast<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<C-s>", ":w <CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("i", "<C-s>", "<Esc>:w<CR>", { noremap = true, silent = true })
@@ -47,4 +44,6 @@ vim.api.nvim_set_keymap(
 )
 
 local daily_note = require("utils.daily_note")
-vim.keymap.set("n", "<leader>o", daily_note.open_daily_note, { desc = "Open today's daily note" })
+vim.keymap.set("n", "<leader>oo", daily_note.open_daily_note, { desc = "Open today's daily note" })
+local climbing_note = require("utils.climbing_note")
+vim.keymap.set("n", "<leader>oc", climbing_note.open_training_note, { desc = "Open climbing note" })

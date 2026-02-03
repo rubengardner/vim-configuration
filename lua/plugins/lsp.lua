@@ -51,5 +51,7 @@ return {
         },
       },
     })
+
+    require("lspconfig").marksman.setup({})
   end,
 }

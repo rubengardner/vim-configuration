@@ -6,6 +6,8 @@ return {
       height = 0.9,
       width = 0.9,
     },
+    hl = "NormalFloat",
+    blend = 15,
   },
   keys = {
     {
