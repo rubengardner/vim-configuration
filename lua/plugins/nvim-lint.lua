@@ -40,7 +40,7 @@ return {
     -- Add typos to existing linter lists or create new ones
     local filetypes = {
       "python", "typescript", "typescriptreact", "javascript", "javascriptreact",
-      "markdown", "text", "lua", "html", "css", "yaml", "json"
+      "markdown", "text", "html", "css", "yaml", "json"
     }
     
     for _, ft in ipairs(filetypes) do

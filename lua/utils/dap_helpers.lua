@@ -1,6 +1,31 @@
 local dap = require("dap")
 local M = {}
 
+--- Gets the Go test function name under cursor or nearest
+function M.get_go_test_function_name()
+  local current_line = vim.fn.line(".")
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+  -- Look for test function on current line or above
+  for i = current_line, 1, -1 do
+    local line = lines[i]
+    if line then
+      local test_func = line:match("^%s*func%s+(Test%w+)%s*%(")
+      if test_func then
+        return test_func
+      end
+    end
+  end
+
+  -- If no test function found, try the word under cursor
+  local word = vim.fn.expand("<cword>")
+  if word:match("^Test%w+") then
+    return word
+  end
+
+  return nil
+end
+
 --- Runs a debug session for the test under the cursor.
 -- It currently supports Go, Python (unittest), and Python (Django) tests.
 function M.debug_test_under_cursor()
@@ -11,16 +36,30 @@ function M.debug_test_under_cursor()
 
   -- Handle Go files
   if ext == "go" then
-    local test_func = vim.fn.expand("<cword>")
+    local test_func = M.get_go_test_function_name()
     local current_pkg = vim.fn.fnamemodify(full_path, ":h")
-    dap.run({
-      type = "go",
-      name = "Debug Go Test",
-      request = "launch",
-      mode = "test",
-      program = current_pkg,
-      args = { "-test.run", test_func },
-    })
+
+    if test_func then
+      dap.run({
+        type = "go",
+        name = "Debug Go Test",
+        request = "launch",
+        mode = "test",
+        program = current_pkg,
+        args = { "-test.run", "^" .. test_func .. "$" },
+        buildFlags = "-v",
+      })
+    else
+      -- Debug all tests in the file
+      dap.run({
+        type = "go",
+        name = "Debug Go Tests in File",
+        request = "launch",
+        mode = "test",
+        program = current_pkg,
+        buildFlags = "-v",
+      })
+    end
     return
   end
 
@@ -83,6 +122,24 @@ function M.debug_test_under_cursor()
       })
     end
   end
+end
+
+--- Debug integration with neotest
+function M.debug_neotest()
+  local neotest = require("neotest")
+  neotest.run.run({ strategy = "dap" })
+end
+
+--- Debug nearest test with neotest (for Go files specifically)
+function M.debug_go_test_with_neotest()
+  local ext = vim.fn.expand("%:e")
+  if ext ~= "go" then
+    vim.notify("This function is only for Go test files", vim.log.levels.WARN)
+    return
+  end
+
+  local neotest = require("neotest")
+  neotest.run.run({ strategy = "dap" })
 end
 
 --- Loads DAP configurations from .vscode/launch.json
