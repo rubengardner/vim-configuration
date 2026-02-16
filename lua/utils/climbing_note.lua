@@ -17,7 +17,7 @@ M.open_training_note = function()
 
   if vim.fn.filereadable(file_path) == 0 then
     -- Ask which day
-    local day = vim.fn.input("Day (A/B): ")
+    local day = vim.fn.input("Max Bouldering (A) / Power Endurance (B): ")
     local day_label = (day == "A" or day == "a") and "Day A" or "Day B"
 
     local session_type = (day == "A" or day == "a") and "Max bouldering" or "Power endurance"
