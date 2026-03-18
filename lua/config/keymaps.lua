@@ -47,3 +47,7 @@ local daily_note = require("utils.daily_note")
 vim.keymap.set("n", "<leader>oo", daily_note.open_daily_note, { desc = "Open today's daily note" })
 local climbing_note = require("utils.climbing_note")
 vim.keymap.set("n", "<leader>oc", climbing_note.open_training_note, { desc = "Open climbing note" })
+
+local typos_fix = require("utils.typos_fix")
+vim.keymap.set("n", "<leader>ae", typos_fix.apply_typos_fix, { desc = "Fix typo at cursor" })
+vim.keymap.set("n", "<leader>aa", require("utils.typos_fix").fix_all_typos, { desc = "Fix ALL typos" })

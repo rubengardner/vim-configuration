@@ -3,11 +3,11 @@ return {
   opts = {
     border = "double",
     dimensions = {
-      height = 0.9,
-      width = 0.9,
+      height = 1,
+      width = 1,
     },
     hl = "NormalFloat",
-    blend = 15,
+    blend = 0,
   },
   keys = {
     {
