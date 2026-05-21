@@ -1,5 +1,7 @@
 local M = {}
 
+local SEND_DB = vim.fn.expand("~") .. "/personalProject/send-db/.venv/bin/send-db"
+
 M.open_training_note = function()
   local home = vim.fn.expand("~")
   local base_path = home .. "/personalProject/docs/climbing"
@@ -45,6 +47,53 @@ M.open_training_note = function()
   end
 
   vim.cmd("edit " .. file_path)
+end
+
+-- Sync board data for a given date (defaults to today) into the session note.
+-- Runs send-db async so Neovim stays responsive; reloads the buffer on success.
+M.sync_board_data = function(date_str)
+  date_str = date_str or os.date("%Y-%m-%d")
+
+  if vim.fn.executable(SEND_DB) == 0 then
+    vim.notify("send-db not found at " .. SEND_DB, vim.log.levels.ERROR)
+    return
+  end
+
+  vim.notify("Syncing board data for " .. date_str .. "…", vim.log.levels.INFO)
+
+  local output = {}
+  vim.fn.jobstart({ SEND_DB, "sync", "--date", date_str }, {
+    on_stdout = function(_, data)
+      for _, line in ipairs(data) do
+        if line ~= "" then table.insert(output, line) end
+      end
+    end,
+    on_stderr = function(_, data)
+      for _, line in ipairs(data) do
+        if line ~= "" then
+          vim.notify(line, vim.log.levels.WARN)
+        end
+      end
+    end,
+    on_exit = function(_, code)
+      if code == 0 then
+        -- Reload the buffer so the injected table appears immediately
+        vim.schedule(function()
+          vim.cmd("checktime")
+          local summary = table.concat(output, " | ")
+          vim.notify("✓ " .. summary, vim.log.levels.INFO)
+        end)
+      else
+        vim.notify("send-db sync failed (exit " .. code .. ")", vim.log.levels.ERROR)
+      end
+    end,
+  })
+end
+
+-- Open today's note AND sync board data in one shot.
+M.open_and_sync = function()
+  M.open_training_note()
+  M.sync_board_data()
 end
 
 return M

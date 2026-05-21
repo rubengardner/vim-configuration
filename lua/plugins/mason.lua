@@ -7,6 +7,7 @@ return {
     vim.list_extend(opts.ensure_installed, {
       "marksman",
       "prettierd",
+      "elixir-ls",
     })
   end,
 }
